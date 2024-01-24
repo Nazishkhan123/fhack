@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Showcase</title>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+  <h1>Project Showcase</h1>
+
+  <!-- Project Submission Form -->
+  <form id="projectForm">
+    <label for="title">Project Title:</label>
+    <input type="text" id="title" name="title" required><br>
+
+    <label for="developer">Developer Name:</label>
+    <input type="text" id="developer" name="developer" required><br>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea><br>
+
+    <label for="hostedURL">Hosted URL:</label>
+    <input type="url" id="hostedURL" name="hostedURL" required><br>
+
+    <button type="button" onclick="submitForm()">Submit</button>
+  </form>
+
+  <!-- Display Projects -->
+  <div id="projectsList"></div>
+
+  <script>
+    function submitForm() {
+      $.post('/submit', $('#projectForm').serialize(), function(response) {
+        // Refresh projects list on successful submission
+        if (response === 200) {
+          refreshProjects();
+        } else {
+          alert('Error submitting the form. Please try again.');
+        }
+      });
+    }
+
+    function refreshProjects() {
+      $.get('/projects', function(projects) {
+        // Display projects in a list or cards
+        let projectsHTML = '<h2>Projects</h2><ul>';
+        projects.forEach(function(project) {
+          projectsHTML += `<li>${project.title} - ${project.developer} - ${project.description} - ${project.hostedURL}</li>`;
+        });
+        projectsHTML += '</ul>';
+
+        // Update the projects list
+        $('#projectsList').html(projectsHTML);
+      });
+    }
+
+    // Initial load of projects on page load
+    $(document).ready(function() {
+      refreshProjects();
+    });
+  </script>
+</body>
+</html>
